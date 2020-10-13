@@ -1,0 +1,11 @@
+#! /bin/bash
+
+case $1 in
+	flush)
+		;;
+	restart)
+		service=${2##*/}
+		systemctl restart x-${service}.service
+		;;
+	*) ;;
+esac

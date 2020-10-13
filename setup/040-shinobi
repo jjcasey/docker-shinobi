@@ -1,0 +1,52 @@
+#! /bin/bash
+
+set -e
+set -x
+
+mv /usr/sbin/policy-rc.d.disabled /usr/sbin/policy-rc.d
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+	ca-certificates \
+	curl \
+	wget
+mkdir /build
+wget -O /build/setup_12.x https://deb.nodesource.com/setup_12.x
+chmod a+x /build/setup_12.x
+/build/setup_12.x
+
+DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+	build-essential \
+	ffmpeg \
+	git \
+	libgif-dev \
+	nodejs \
+	python2.7
+
+apt-get -y -u dist-upgrade
+apt-get clean
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+git clone https://gitlab.com/Shinobi-Systems/Shinobi.git /opt/shinobi
+
+cd /opt/shinobi
+
+npm i npm@latest -g
+npm install pg
+npm install --unsafe-perm
+npm audit fix --force
+#npm install pm2 -g
+
+#mkdir /var/lib/pm2
+#PM2_HOME=/var/lib/pm2 pm2 start --name camera /opt/shinobi/camera.js
+#PM2_HOME=/var/lib/pm2 pm2 start --name cron /opt/shinobi/cron.js
+#PM2_HOME=/var/lib/pm2 pm2 startup
+#PM2_HOME=/var/lib/pm2 pm2 save
+#PM2_HOME=/var/lib/pm2 pm2 stop all
+
+systemctl enable x-camera.js.service
+systemctl enable x-cron.js.service
+
+/usr/local/bin/docker-wipelogs
+
+mv /usr/sbin/policy-rc.d /usr/sbin/policy-rc.d.disabled
+

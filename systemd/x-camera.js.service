@@ -1,0 +1,14 @@
+[Unit]
+Description=Shinobi Camera
+Documentation=https://shinobi.video/
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/shinobi
+ExecStart=/usr/bin/node camera.js
+Restart=always
+RestartSec=500ms
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
